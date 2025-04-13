@@ -18,6 +18,9 @@ func describe() (string, error) {
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
 	err := cmd.Run()
+	if strings.Contains(stderr.String(), "cannot describe anything") {
+		return "v0.0.0", nil
+	}
 	if err != nil {
 		return "", fmt.Errorf("%s: %w", cmd.String(), err)
 	}
