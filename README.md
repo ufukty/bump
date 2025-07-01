@@ -1,5 +1,7 @@
 # bump
 
+![Social card](assets/github-social-preview.png)
+
 Smallest CLI utility that adds the next semantic version tag to the current commit in active branch in a git folder.
 
 ## Install
