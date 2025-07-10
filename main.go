@@ -46,7 +46,7 @@ func register(v string) error {
 }
 
 func Main() error {
-	mods := []string{"major", "minor", "fix"}
+	mods := []string{"major", "minor", "patch"}
 
 	if len(os.Args) != 2 {
 		return fmt.Errorf("expected to see one argument among: %s", strings.Join(mods, ", "))
@@ -63,7 +63,7 @@ func Main() error {
 	}
 	ms := r.FindStringSubmatch(v)
 	if len(ms) != 4 {
-		return fmt.Errorf("expected to see 'major.minor.fix' format: %s", v)
+		return fmt.Errorf("expected to see 'major.minor.patch' format: %s", v)
 	}
 	ms = ms[1:]
 

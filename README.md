@@ -17,7 +17,7 @@ If you don't have the go compiler, installing it is too easy to skip [go.dev/dl]
 ```sh
 $ cd my-beautiful-git-project
 # either of
-$ bump fix
+$ bump patch
 $ bump minor
 $ bump major
 ```
