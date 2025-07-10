@@ -7,7 +7,7 @@ Smallest CLI utility that adds the next semantic version tag to the current comm
 ## Install
 
 ```sh
-go install github.com/ufukty/bump
+go install github.com/ufukty/bump@latest
 ```
 
 If you don't have the go compiler, installing it is too easy to skip [go.dev/dl](https://go.dev/dl)
