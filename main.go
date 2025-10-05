@@ -6,11 +6,12 @@ import (
 	"strings"
 
 	"github.com/ufukty/bump/internal/git"
+	"github.com/ufukty/bump/internal/labels"
 )
 
 func Main() error {
 	if len(os.Args) != 2 {
-		return fmt.Errorf("expected to see one argument among: %s", strings.Join(git.Mods, ", "))
+		return fmt.Errorf("expected to see one argument among: %s", strings.Join(labels.Mods, ", "))
 	}
 
 	label := os.Args[1]

@@ -4,13 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
-	"regexp"
-	"slices"
-	"strconv"
 	"strings"
-)
 
-var Mods = []string{"major", "minor", "patch"}
+	"github.com/ufukty/bump/internal/labels"
+)
 
 func describe() (string, error) {
 	stdout := &bytes.Buffer{}
@@ -54,31 +51,12 @@ func IncrementAndApply(label string) error {
 		return fmt.Errorf("git describe: %w", err)
 	}
 
-	r, err := regexp.Compile(`v([0-9]+)\.([0-9]+)\.([0-9]+).*`)
+	v2, err := labels.Increment(v, label)
 	if err != nil {
-		return fmt.Errorf("compiling regex: %w", err)
-	}
-	ms := r.FindStringSubmatch(v)
-	if len(ms) != 4 {
-		return fmt.Errorf("expected to see 'major.minor.patch' format: %s", v)
-	}
-	ms = ms[1:]
-
-	i := slices.Index(Mods, label)
-	if i == -1 {
-		return fmt.Errorf("invalid argument. available arguments: %s", strings.Join(Mods, ", "))
+		return fmt.Errorf("incrementing: %w", err)
 	}
 
-	n, err := strconv.Atoi(ms[i])
-	if err != nil {
-		return fmt.Errorf("parsing integer: %w", err)
-	}
-	ms[i] = fmt.Sprintf("%d", n+1)
-	for j := i + 1; j < 3; j++ {
-		ms[j] = "0"
-	}
-
-	err = register("v" + strings.Join(ms, "."))
+	err = register(v2)
 	if err != nil {
 		return fmt.Errorf("registering the next version: %w", err)
 	}
