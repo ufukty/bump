@@ -20,7 +20,10 @@ $ cd my-beautiful-git-project
 $ bump patch
 $ bump minor
 $ bump major
+$ bump alpha
 ```
+
+Refer to [the issue](https://github.com/ufukty/bump/issues/1) for `alpha` label usage.
 
 ## Suggestions
 
