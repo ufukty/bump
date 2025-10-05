@@ -19,12 +19,17 @@ func Main() error {
 		return fmt.Errorf("git describe: %w", err)
 	}
 
-	v2, err := labels.Increment(v1, os.Args[1])
+	l1, err := labels.Parse(v1)
+	if err != nil {
+		return fmt.Errorf("parsing current version: %w", err)
+	}
+
+	l2, err := labels.Increment(l1, os.Args[1])
 	if err != nil {
 		return fmt.Errorf("incrementing: %w", err)
 	}
 
-	if err := git.Tag(v2); err != nil {
+	if err := git.Tag(l2.String()); err != nil {
 		return fmt.Errorf("git tag: %w", err)
 	}
 
