@@ -14,9 +14,18 @@ func Main() error {
 		return fmt.Errorf("expected to see one argument among: %s", strings.Join(labels.Mods, ", "))
 	}
 
-	label := os.Args[1]
-	if err := git.IncrementAndApply(label); err != nil {
-		return fmt.Errorf("incrementing %s: %w", label, err)
+	v1, err := git.Describe()
+	if err != nil {
+		return fmt.Errorf("git describe: %w", err)
+	}
+
+	v2, err := labels.Increment(v1, os.Args[1])
+	if err != nil {
+		return fmt.Errorf("incrementing: %w", err)
+	}
+
+	if err := git.Register(v2); err != nil {
+		return fmt.Errorf("registering the next version: %w", err)
 	}
 
 	return nil
