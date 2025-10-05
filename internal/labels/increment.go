@@ -9,9 +9,10 @@ const (
 	Major = "major"
 	Minor = "minor"
 	Patch = "patch"
+	Alpha = "alpha"
 )
 
-var Mods = []string{Major, Minor, Patch}
+var Mods = []string{Major, Minor, Patch, Alpha}
 
 func Increment(version Labels, label string) (Labels, error) {
 	l := slices.Index(Mods, label)
