@@ -8,7 +8,13 @@ import (
 	"strings"
 )
 
-var Mods = []string{"major", "minor", "patch"}
+const (
+	Major = "major"
+	Minor = "minor"
+	Patch = "patch"
+)
+
+var Mods = []string{Major, Minor, Patch}
 
 var extractor = regexp.MustCompile(`v([0-9]+)\.([0-9]+)\.([0-9]+).*`)
 
