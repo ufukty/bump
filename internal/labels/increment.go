@@ -3,8 +3,6 @@ package labels
 import (
 	"fmt"
 	"slices"
-	"strconv"
-	"strings"
 )
 
 const (
@@ -15,26 +13,15 @@ const (
 
 var Mods = []string{Major, Minor, Patch}
 
-func Increment(verstr, label string) (string, error) {
-	ms := extractor.FindStringSubmatch(verstr)
-	if len(ms) != 4 {
-		return "", fmt.Errorf("expected to see 'major.minor.patch' format: %s", verstr)
-	}
-	ms = ms[1:]
-
-	i := slices.Index(Mods, label)
-	if i == -1 {
-		return "", fmt.Errorf("invalid argument. available arguments: %s", strings.Join(Mods, ", "))
+func Increment(version Labels, label string) (Labels, error) {
+	l := slices.Index(Mods, label)
+	if l == -1 {
+		return Labels{}, fmt.Errorf("unknown label: %s", label)
 	}
 
-	n, err := strconv.Atoi(ms[i])
-	if err != nil {
-		return "", fmt.Errorf("parsing integer: %w", err)
+	version[l] += 1
+	for j := l + 1; j < 4; j++ { // reseting digits carried over
+		version[j] = 0
 	}
-	ms[i] = fmt.Sprintf("%d", n+1)
-	for j := i + 1; j < 3; j++ {
-		ms[j] = "0"
-	}
-
-	return "v" + strings.Join(ms, "."), nil
+	return version, nil
 }
