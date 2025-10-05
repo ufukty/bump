@@ -24,8 +24,8 @@ func Main() error {
 		return fmt.Errorf("incrementing: %w", err)
 	}
 
-	if err := git.Register(v2); err != nil {
-		return fmt.Errorf("registering the next version: %w", err)
+	if err := git.Tag(v2); err != nil {
+		return fmt.Errorf("git tag: %w", err)
 	}
 
 	return nil

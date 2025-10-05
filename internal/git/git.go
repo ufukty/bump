@@ -27,7 +27,7 @@ func Describe() (string, error) {
 }
 
 // CAUTION: side effects
-func Register(verstr string) error {
+func Tag(verstr string) error {
 	b := &bytes.Buffer{}
 	cmd := exec.Command("git", "tag", verstr)
 	cmd.Stdout = b
