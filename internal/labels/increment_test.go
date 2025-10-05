@@ -97,3 +97,29 @@ func TestIncrement_Patch(t *testing.T) {
 		})
 	}
 }
+
+func TestIncrement_Alpha(t *testing.T) {
+	tcs := map[Labels]Labels{
+		{0, 0, 0, 0}: {0, 0, 0, 1},
+		{0, 0, 0, 1}: {0, 0, 0, 2},
+		{0, 0, 1, 0}: {0, 0, 1, 1},
+		{0, 0, 1, 1}: {0, 0, 1, 2},
+		{0, 1, 0, 0}: {0, 1, 0, 1},
+		{0, 1, 0, 1}: {0, 1, 0, 2},
+		{1, 0, 0, 0}: {1, 0, 0, 1},
+		{1, 0, 0, 1}: {1, 0, 0, 2},
+	}
+
+	for _, input := range sort(maps.Keys(tcs)) {
+		t.Run(input.String(), func(t *testing.T) {
+			expected := tcs[input]
+			got, err := Increment(input, Alpha)
+			if err != nil {
+				t.Fatalf("act, unexpected error: %v", err)
+			}
+			if expected != got {
+				t.Errorf("expected %q got %q", expected, got)
+			}
+		})
+	}
+}
