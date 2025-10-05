@@ -53,9 +53,11 @@ func TestLabels_String(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		got := tc.input.String()
-		if tc.expected != got {
-			t.Errorf("expected %q got %q", tc.expected, got)
-		}
+		t.Run(tc.expected, func(t *testing.T) {
+			got := tc.input.String()
+			if tc.expected != got {
+				t.Errorf("expected %q got %q", tc.expected, got)
+			}
+		})
 	}
 }
