@@ -1,89 +1,36 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"os"
-	"os/exec"
-	"regexp"
-	"slices"
-	"strconv"
 	"strings"
+
+	"github.com/ufukty/bump/internal/git"
+	"github.com/ufukty/bump/internal/labels"
 )
 
-func describe() (string, error) {
-	stdout := &bytes.Buffer{}
-	stderr := &bytes.Buffer{}
-	cmd := exec.Command("git", "describe", "--tag")
-	cmd.Stdout = stdout
-	cmd.Stderr = stderr
-	err := cmd.Run()
-	if strings.Contains(stderr.String(), "cannot describe anything") {
-		return "v0.0.0", nil
-	}
-	if err != nil {
-		return "", fmt.Errorf("%s: %w", cmd.String(), err)
-	}
-	if stderr.Len() > 0 {
-		return "", fmt.Errorf("checking output:\n%s", stderr.String())
-	}
-	return stdout.String(), nil
-}
-
-func register(v string) error {
-	b := &bytes.Buffer{}
-	cmd := exec.Command("git", "tag", v)
-	cmd.Stdout = b
-	cmd.Stderr = b
-	err := cmd.Run()
-	if err != nil {
-		return fmt.Errorf("%s: %w", cmd.String(), err)
-	}
-	if b.Len() > 0 {
-		return fmt.Errorf("checking output:\n%s", b.String())
-	}
-	return nil
-}
-
 func Main() error {
-	mods := []string{"major", "minor", "patch"}
-
 	if len(os.Args) != 2 {
-		return fmt.Errorf("expected to see one argument among: %s", strings.Join(mods, ", "))
+		return fmt.Errorf("expected to see one argument among: %s", strings.Join(labels.Mods, ", "))
 	}
 
-	v, err := describe()
+	v1, err := git.Describe()
 	if err != nil {
 		return fmt.Errorf("git describe: %w", err)
 	}
 
-	r, err := regexp.Compile(`v([0-9]+)\.([0-9]+)\.([0-9]+).*`)
+	l1, err := labels.Parse(v1)
 	if err != nil {
-		return fmt.Errorf("compiling regex: %w", err)
-	}
-	ms := r.FindStringSubmatch(v)
-	if len(ms) != 4 {
-		return fmt.Errorf("expected to see 'major.minor.patch' format: %s", v)
-	}
-	ms = ms[1:]
-
-	i := slices.Index(mods, os.Args[1])
-	if i == -1 {
-		return fmt.Errorf("invalid argument. available arguments: %s", strings.Join(mods, ", "))
+		return fmt.Errorf("parsing current version: %w", err)
 	}
 
-	n, err := strconv.Atoi(ms[i])
+	l2, err := labels.Increment(l1, os.Args[1])
 	if err != nil {
-		return fmt.Errorf("parsing integer: %w", err)
-	}
-	ms[i] = fmt.Sprintf("%d", n+1)
-	for j := i + 1; j < 3; j++ {
-		ms[j] = "0"
+		return fmt.Errorf("incrementing: %w", err)
 	}
 
-	err = register("v" + strings.Join(ms, "."))
-	if err != nil {
-		return fmt.Errorf("registering the next version: %w", err)
+	if err := git.Tag(l2.String()); err != nil {
+		return fmt.Errorf("git tag: %w", err)
 	}
 
 	return nil
