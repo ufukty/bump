@@ -59,6 +59,8 @@ func TestIncrement_MajorToVersionOneNegative(t *testing.T) {
 			_, err := Increment(input, Args{Label: Major})
 			if err == nil {
 				t.Fatalf("act, unexpected success. Increment should reject issuing v1.0.0 without the arg")
+			} else if err != ErrAccidentalVersionOne {
+				t.Fatalf("act, expected %v got %v", ErrAccidentalVersionOne, err)
 			}
 		})
 	}

@@ -27,10 +27,25 @@ func increment(version Labels, label int) Labels {
 	return version
 }
 
+func equal(a, b Labels) bool {
+	return a[0] == b[0] &&
+		a[1] == b[1] &&
+		a[2] == b[2] &&
+		a[3] == b[3]
+}
+
+var v1 = Labels{1, 0, 0, 0}
+
+var ErrAccidentalVersionOne = fmt.Errorf("unforced leaving of zero versions")
+
 func Increment(version Labels, args Args) (Labels, error) {
 	l := slices.Index(Mods, args.Label)
 	if l == -1 {
 		return Labels{}, fmt.Errorf("unknown label: %s", args.Label)
 	}
-	return increment(version, l), nil
+	next := increment(version, l)
+	if !args.Force && equal(next, v1) {
+		return Labels{}, ErrAccidentalVersionOne
+	}
+	return next, nil
 }
