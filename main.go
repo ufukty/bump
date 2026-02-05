@@ -16,19 +16,20 @@ type Args struct {
 	Force bool
 }
 
-func args() (Args, error) {
-	args := Args{}
-	flag.BoolVar(&args.Force, "force", false, "force incrementing the version to v1.0.0 with major command")
-	flag.Parse()
-	if flag.NArg() != 1 {
+func args(arguments []string) (Args, error) {
+	fs := flag.NewFlagSet("bump", flag.ExitOnError)
+	as := Args{}
+	fs.BoolVar(&as.Force, "force", false, "force incrementing the version to v1.0.0 with major command")
+	fs.Parse(arguments)
+	if fs.NArg() != 1 {
 		return Args{}, fmt.Errorf("expected to see one argument among: %s", strings.Join(labels.Mods, ", "))
 	}
-	args.Label = flag.Arg(1)
-	return args, nil
+	as.Label = fs.Arg(1)
+	return as, nil
 }
 
 func Main() error {
-	args, err := args()
+	args, err := args(os.Args)
 	if err != nil {
 		return fmt.Errorf("reading args: %w", err)
 	}
