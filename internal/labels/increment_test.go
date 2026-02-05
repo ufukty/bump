@@ -35,7 +35,7 @@ func TestIncrement_Major(t *testing.T) {
 	for _, input := range sort(maps.Keys(tcs)) {
 		t.Run(input.String(), func(t *testing.T) {
 			expected := tcs[input]
-			got, err := Increment(input, Major)
+			got, err := Increment(input, Args{Label: Major})
 			if err != nil {
 				t.Fatalf("act, unexpected error: %v", err)
 			}
@@ -61,7 +61,7 @@ func TestIncrement_Minor(t *testing.T) {
 	for _, input := range sort(maps.Keys(tcs)) {
 		t.Run(input.String(), func(t *testing.T) {
 			expected := tcs[input]
-			got, err := Increment(input, Minor)
+			got, err := Increment(input, Args{Label: Minor})
 			if err != nil {
 				t.Fatalf("act, unexpected error: %v", err)
 			}
@@ -87,7 +87,7 @@ func TestIncrement_Patch(t *testing.T) {
 	for _, input := range sort(maps.Keys(tcs)) {
 		t.Run(input.String(), func(t *testing.T) {
 			expected := tcs[input]
-			got, err := Increment(input, Patch)
+			got, err := Increment(input, Args{Label: Patch})
 			if err != nil {
 				t.Fatalf("act, unexpected error: %v", err)
 			}
@@ -113,7 +113,7 @@ func TestIncrement_Alpha(t *testing.T) {
 	for _, input := range sort(maps.Keys(tcs)) {
 		t.Run(input.String(), func(t *testing.T) {
 			expected := tcs[input]
-			got, err := Increment(input, Alpha)
+			got, err := Increment(input, Args{Label: Alpha})
 			if err != nil {
 				t.Fatalf("act, unexpected error: %v", err)
 			}
