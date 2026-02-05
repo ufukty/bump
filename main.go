@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"strings"
@@ -9,9 +10,26 @@ import (
 	"github.com/ufukty/bump/internal/labels"
 )
 
+type Args struct {
+	Label string
+	Force bool
+}
+
+func args() (Args, error) {
+	args := Args{}
+	flag.BoolVar(&args.Force, "force", false, "force incrementing the version to v1.0.0 with major command")
+	flag.Parse()
+	if flag.NArg() != 1 {
+		return Args{}, fmt.Errorf("expected to see one argument among: %s", strings.Join(labels.Mods, ", "))
+	}
+	args.Label = flag.Arg(1)
+	return args, nil
+}
+
 func Main() error {
-	if len(os.Args) != 2 {
-		return fmt.Errorf("expected to see one argument among: %s", strings.Join(labels.Mods, ", "))
+	args, err := args()
+	if err != nil {
+		return fmt.Errorf("reading args: %w", err)
 	}
 
 	v1, err := git.Describe()
@@ -24,7 +42,7 @@ func Main() error {
 		return fmt.Errorf("parsing current version: %w", err)
 	}
 
-	l2, err := labels.Increment(l1, os.Args[1])
+	l2, err := labels.Increment(l1, labels.Args(args))
 	if err != nil {
 		return fmt.Errorf("incrementing: %w", err)
 	}
