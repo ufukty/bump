@@ -14,23 +14,46 @@ import (
 type Args struct {
 	Label string
 	Force bool
+	Help  bool
 }
 
-func args() (Args, error) {
-	args := Args{}
-	flag.BoolVar(&args.Force, "force", false, "force incrementing the version to v1.0.0 with major command")
-	flag.Parse()
-	if flag.NArg() != 1 {
-		return Args{}, fmt.Errorf("expected to see one argument among: %s", strings.Join(labels.Mods, ", "))
+var ErrNoLabel = fmt.Errorf("CLI args don't mention the target label name")
+
+const helpstr = `bump
+Increment the version number of a repository using major, minor and fix commands.
+
+Usage:
+  bump [--help] [--force] [major|minor|patch|alpha]
+
+Flags:
+`
+
+func args(arguments []string) (Args, error) {
+	fs := flag.NewFlagSet("bump", flag.ExitOnError)
+	as := Args{}
+	fs.BoolVar(&as.Force, "force", false, "Use for the major command to allow incrementing the version number up to v1.0.0")
+	fs.BoolVar(&as.Help, "help", false, "prints usage information and exits")
+	err := fs.Parse(arguments)
+	if err != nil {
+		return Args{}, fmt.Errorf("parsing flags: %w", err)
 	}
-	args.Label = flag.Arg(1)
-	return args, nil
+	if as.Help {
+		fmt.Print(helpstr)
+		fs.PrintDefaults()
+	} else if fs.NArg() < 1 {
+		return Args{}, fmt.Errorf("missing the label: %s", strings.Join(labels.Mods, ", "))
+	} else if fs.NArg() > 0 {
+		as.Label = fs.Arg(0)
+	}
+	return as, nil
 }
 
 func Main() error {
-	args, err := args()
+	args, err := args(os.Args[1:])
 	if err != nil {
 		return fmt.Errorf("reading args: %w", err)
+	} else if args.Help {
+		return nil
 	}
 
 	v1, err := git.Describe()
@@ -43,7 +66,7 @@ func Main() error {
 		return fmt.Errorf("parsing current version: %w", err)
 	}
 
-	l2, err := labels.Increment(l1, labels.Args(args))
+	l2, err := labels.Increment(l1, labels.Args{Label: args.Label, Force: args.Force})
 	if err != nil {
 		return fmt.Errorf("incrementing: %w", err)
 	}
@@ -58,6 +81,8 @@ func Main() error {
 func main() {
 	if err := Main(); err != nil {
 		switch {
+		case errors.Is(err, ErrNoLabel):
+			fmt.Println("label name not found. provide any of: ", strings.Join(labels.Mods, ", "))
 		case errors.Is(err, labels.ErrAccidentalVersionOne):
 			fmt.Println("bump prevents accidentally leaving the zero versions. Run: bump --help")
 		default:
