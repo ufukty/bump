@@ -38,6 +38,14 @@ Bump follows `MAJOR`.`MINOR`.`PATCH` label rules and issues `v1.0.0`-like tags. 
 | `v1.2.3` | `bump patch` | `v1.2.4`   | bug fixes       |
 | `v1.2.3` | `bump alpha` | `v1.2.3.1` | not for use     |
 
+### Bumping to v1
+
+Bump rejects the `major` command and fails when the next version is `v1.0.0`. This measure is taken to protect Bump users to accidentally issue and push this very special version number and cause an implicit stability promise for their projects. Thus, in order to bump from a zero version to land on the `v1.0.0` Bump users need to provide this `--force` flag:
+
+```sh
+bump --force major
+```
+
 ### Publishing tags
 
 Don't forget pushing tags to GitHub next time you push.
