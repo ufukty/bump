@@ -20,7 +20,7 @@ func sort(cases iter.Seq[Labels]) []Labels {
 	})
 }
 
-func TestIncrement_Major(t *testing.T) {
+func TestIncrement_MajorToVersionOnePositive(t *testing.T) {
 	tcs := map[Labels]Labels{
 		{0, 0, 0, 0}: {1, 0, 0, 0},
 		{0, 0, 0, 1}: {1, 0, 0, 0},
@@ -28,8 +28,52 @@ func TestIncrement_Major(t *testing.T) {
 		{0, 0, 1, 1}: {1, 0, 0, 0},
 		{0, 1, 0, 0}: {1, 0, 0, 0},
 		{0, 1, 0, 1}: {1, 0, 0, 0},
+	}
+
+	for _, input := range sort(maps.Keys(tcs)) {
+		t.Run(input.String(), func(t *testing.T) {
+			expected := tcs[input]
+			got, err := Increment(input, Args{Label: Major, Force: true})
+			if err != nil {
+				t.Fatalf("act, unexpected error on forcing to v1.0.0: %v", err)
+			}
+			if expected != got {
+				t.Errorf("expected %q got %q", expected, got)
+			}
+		})
+	}
+}
+
+func TestIncrement_MajorToVersionOneNegative(t *testing.T) {
+	tcs := []Labels{
+		{0, 0, 0, 0},
+		{0, 0, 0, 1},
+		{0, 0, 1, 0},
+		{0, 0, 1, 1},
+		{0, 1, 0, 0},
+		{0, 1, 0, 1},
+	}
+
+	for _, input := range tcs {
+		t.Run(input.String(), func(t *testing.T) {
+			_, err := Increment(input, Args{Label: Major})
+			if err == nil {
+				t.Fatalf("act, unexpected success. Increment should reject issuing v1.0.0 without the arg")
+			}
+		})
+	}
+}
+
+func TestIncrement_Major(t *testing.T) {
+	tcs := map[Labels]Labels{
 		{1, 0, 0, 0}: {2, 0, 0, 0},
 		{1, 0, 0, 1}: {2, 0, 0, 0},
+		{1, 0, 1, 0}: {2, 0, 0, 0},
+		{1, 0, 1, 1}: {2, 0, 0, 0},
+		{1, 1, 0, 0}: {2, 0, 0, 0},
+		{1, 1, 0, 1}: {2, 0, 0, 0},
+		{2, 0, 0, 0}: {3, 0, 0, 0},
+		{2, 0, 0, 1}: {3, 0, 0, 0},
 	}
 
 	for _, input := range sort(maps.Keys(tcs)) {
