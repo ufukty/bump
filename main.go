@@ -21,7 +21,7 @@ type Args struct {
 var ErrNoLabel = fmt.Errorf("CLI args don't mention the target label name")
 
 //go:embed synopsis.txt
-var helpstr string
+var synopsis string
 
 func args(arguments []string) (Args, error) {
 	fs := flag.NewFlagSet("bump", flag.ExitOnError)
@@ -33,7 +33,7 @@ func args(arguments []string) (Args, error) {
 		return Args{}, fmt.Errorf("parsing flags: %w", err)
 	}
 	if as.Help {
-		fmt.Print(helpstr)
+		fmt.Print(synopsis)
 		fs.PrintDefaults()
 	} else if fs.NArg() < 1 {
 		return Args{}, fmt.Errorf("missing the label: %s", strings.Join(labels.Mods, ", "))
