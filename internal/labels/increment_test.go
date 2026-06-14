@@ -6,6 +6,8 @@ import (
 	"maps"
 	"slices"
 	"testing"
+
+	"github.com/ufukty/bump/internal/args"
 )
 
 // to stablize ordering of test cases
@@ -33,7 +35,7 @@ func TestIncrement_MajorToVersionOnePositive(t *testing.T) {
 	for _, input := range sort(maps.Keys(tcs)) {
 		t.Run(input.String(), func(t *testing.T) {
 			expected := tcs[input]
-			got, err := Increment(input, Args{Label: Major, Force: true})
+			got, err := Increment(input, &args.Args{Command: Major, Force: true})
 			if err != nil {
 				t.Fatalf("act, unexpected error on forcing to v1.0.0: %v", err)
 			}
@@ -56,7 +58,7 @@ func TestIncrement_MajorToVersionOneNegative(t *testing.T) {
 
 	for _, input := range tcs {
 		t.Run(input.String(), func(t *testing.T) {
-			_, err := Increment(input, Args{Label: Major})
+			_, err := Increment(input, &args.Args{Command: Major})
 			if err == nil {
 				t.Fatalf("act, unexpected success. Increment should reject issuing v1.0.0 without the arg")
 			} else if err != ErrAccidentalVersionOne {
@@ -81,7 +83,7 @@ func TestIncrement_Major(t *testing.T) {
 	for _, input := range sort(maps.Keys(tcs)) {
 		t.Run(input.String(), func(t *testing.T) {
 			expected := tcs[input]
-			got, err := Increment(input, Args{Label: Major})
+			got, err := Increment(input, &args.Args{Command: Major})
 			if err != nil {
 				t.Fatalf("act, unexpected error: %v", err)
 			}
@@ -107,7 +109,7 @@ func TestIncrement_Minor(t *testing.T) {
 	for _, input := range sort(maps.Keys(tcs)) {
 		t.Run(input.String(), func(t *testing.T) {
 			expected := tcs[input]
-			got, err := Increment(input, Args{Label: Minor})
+			got, err := Increment(input, &args.Args{Command: Minor})
 			if err != nil {
 				t.Fatalf("act, unexpected error: %v", err)
 			}
@@ -133,7 +135,7 @@ func TestIncrement_Patch(t *testing.T) {
 	for _, input := range sort(maps.Keys(tcs)) {
 		t.Run(input.String(), func(t *testing.T) {
 			expected := tcs[input]
-			got, err := Increment(input, Args{Label: Patch})
+			got, err := Increment(input, &args.Args{Command: Patch})
 			if err != nil {
 				t.Fatalf("act, unexpected error: %v", err)
 			}
@@ -159,7 +161,7 @@ func TestIncrement_Alpha(t *testing.T) {
 	for _, input := range sort(maps.Keys(tcs)) {
 		t.Run(input.String(), func(t *testing.T) {
 			expected := tcs[input]
-			got, err := Increment(input, Args{Label: Alpha})
+			got, err := Increment(input, &args.Args{Command: Alpha})
 			if err != nil {
 				t.Fatalf("act, unexpected error: %v", err)
 			}

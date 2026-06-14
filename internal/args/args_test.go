@@ -1,47 +1,45 @@
-package main
+package args
 
 import (
 	"testing"
-
-	"github.com/ufukty/bump/internal/labels"
 )
 
 func TestArgs_ForceMajor(t *testing.T) {
-	got, err := args([]string{"--force", "major"})
+	got, err := parse([]string{"major", "--force"})
 	if err != nil {
 		t.Fatalf("act, unexpected error: %v", err)
 	}
 	expected := Args{
-		Label: labels.Major,
-		Force: true,
+		Command: "major",
+		Force:   true,
 	}
-	if got != expected {
+	if *got != expected {
 		t.Errorf("assert, expected %#v got %#v", expected, got)
 	}
 }
 
 func TestArgs_Major(t *testing.T) {
-	got, err := args([]string{"major"})
+	got, err := parse([]string{"major"})
 	if err != nil {
 		t.Fatalf("act, unexpected error: %v", err)
 	}
 	expected := Args{
-		Label: labels.Major,
+		Command: "major",
 	}
-	if got != expected {
+	if *got != expected {
 		t.Errorf("assert, expected %#v got %#v", expected, got)
 	}
 }
 
 func TestArgs_Help(t *testing.T) {
-	got, err := args([]string{"--help"})
+	got, err := parse([]string{"help"})
 	if err != nil {
 		t.Fatalf("act, unexpected error: %v", err)
 	}
 	expected := Args{
-		Help: true,
+		Command: "help",
 	}
-	if got != expected {
+	if *got != expected {
 		t.Errorf("assert, expected %#v got %#v", expected, got)
 	}
 }

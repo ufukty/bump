@@ -3,6 +3,8 @@ package labels
 import (
 	"fmt"
 	"slices"
+
+	"github.com/ufukty/bump/internal/args"
 )
 
 const (
@@ -13,11 +15,6 @@ const (
 )
 
 var Mods = []string{Major, Minor, Patch, Alpha}
-
-type Args struct {
-	Label string
-	Force bool
-}
 
 func increment(version Labels, label int) Labels {
 	version[label] += 1
@@ -38,10 +35,10 @@ var v1 = Labels{1, 0, 0, 0}
 
 var ErrAccidentalVersionOne = fmt.Errorf("unforced leaving of zero versions")
 
-func Increment(version Labels, args Args) (Labels, error) {
-	l := slices.Index(Mods, args.Label)
+func Increment(version Labels, args *args.Args) (Labels, error) {
+	l := slices.Index(Mods, args.Command)
 	if l == -1 {
-		return Labels{}, fmt.Errorf("unknown label: %s", args.Label)
+		return Labels{}, fmt.Errorf("unknown label: %s", args.Command)
 	}
 	next := increment(version, l)
 	if !args.Force && equal(next, v1) {
