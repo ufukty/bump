@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"errors"
 	"flag"
 	"fmt"
@@ -19,14 +20,8 @@ type Args struct {
 
 var ErrNoLabel = fmt.Errorf("CLI args don't mention the target label name")
 
-const helpstr = `bump
-Increment the version number of a repository using major, minor and fix commands.
-
-Usage:
-  bump [--help] [--force] [major|minor|patch|alpha]
-
-Flags:
-`
+//go:embed synopsis.txt
+var helpstr string
 
 func args(arguments []string) (Args, error) {
 	fs := flag.NewFlagSet("bump", flag.ExitOnError)

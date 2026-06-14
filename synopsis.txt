@@ -1,0 +1,7 @@
+bump
+Increment the version number of a repository using major, minor and fix commands.
+
+Usage:
+  bump [--help] [--force] [major|minor|patch|alpha]
+
+Flags:
