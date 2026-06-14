@@ -15,10 +15,10 @@ func TestParse(t *testing.T) {
 		{input: "v0.1.0", expected: Labels{0, 1, 0, 0}},
 		{input: "v1.0.0", expected: Labels{1, 0, 0, 0}},
 
-		{input: "v0.0.0.1", expected: Labels{0, 0, 0, 1}},
-		{input: "v0.0.1.1", expected: Labels{0, 0, 1, 1}},
-		{input: "v0.1.0.1", expected: Labels{0, 1, 0, 1}},
-		{input: "v1.0.0.1", expected: Labels{1, 0, 0, 1}},
+		{input: "v0.0.0-alpha.1", expected: Labels{0, 0, 0, 1}},
+		{input: "v0.0.1-alpha.1", expected: Labels{0, 0, 1, 1}},
+		{input: "v0.1.0-alpha.1", expected: Labels{0, 1, 0, 1}},
+		{input: "v1.0.0-alpha.1", expected: Labels{1, 0, 0, 1}},
 	}
 
 	for _, tc := range tcs {
@@ -46,10 +46,10 @@ func TestLabels_String(t *testing.T) {
 		{input: Labels{0, 1, 0, 0}, expected: "v0.1.0"},
 		{input: Labels{1, 0, 0, 0}, expected: "v1.0.0"},
 
-		{input: Labels{0, 0, 0, 1}, expected: "v0.0.0.1"},
-		{input: Labels{0, 0, 1, 1}, expected: "v0.0.1.1"},
-		{input: Labels{0, 1, 0, 1}, expected: "v0.1.0.1"},
-		{input: Labels{1, 0, 0, 1}, expected: "v1.0.0.1"},
+		{input: Labels{0, 0, 0, 1}, expected: "v0.0.0-alpha.1"},
+		{input: Labels{0, 0, 1, 1}, expected: "v0.0.1-alpha.1"},
+		{input: Labels{0, 1, 0, 1}, expected: "v0.1.0-alpha.1"},
+		{input: Labels{1, 0, 0, 1}, expected: "v1.0.0-alpha.1"},
 	}
 
 	for _, tc := range tcs {
