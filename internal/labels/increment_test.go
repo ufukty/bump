@@ -2,6 +2,7 @@ package labels
 
 import (
 	"cmp"
+	"fmt"
 	"iter"
 	"maps"
 	"slices"
@@ -146,16 +147,16 @@ func TestIncrement_Patch(t *testing.T) {
 	}
 }
 
-func TestIncrement_Alpha(t *testing.T) {
+func TestIncrement_iterateAlpha(t *testing.T) {
 	tcs := map[Labels]Labels{
-		{0, 0, 0, 0}: {0, 0, 0, 1},
 		{0, 0, 0, 1}: {0, 0, 0, 2},
-		{0, 0, 1, 0}: {0, 0, 1, 1},
+		{0, 0, 0, 8}: {0, 0, 0, 9},
 		{0, 0, 1, 1}: {0, 0, 1, 2},
-		{0, 1, 0, 0}: {0, 1, 0, 1},
+		{0, 0, 1, 8}: {0, 0, 1, 9},
 		{0, 1, 0, 1}: {0, 1, 0, 2},
-		{1, 0, 0, 0}: {1, 0, 0, 1},
+		{0, 1, 0, 8}: {0, 1, 0, 9},
 		{1, 0, 0, 1}: {1, 0, 0, 2},
+		{1, 0, 0, 8}: {1, 0, 0, 9},
 	}
 
 	for _, input := range sort(maps.Keys(tcs)) {
@@ -169,5 +170,72 @@ func TestIncrement_Alpha(t *testing.T) {
 				t.Errorf("expected %q got %q", expected, got)
 			}
 		})
+	}
+}
+
+func TestIncrement_iterateAlphaWithoutTrack(t *testing.T) {
+	tcs := []Labels{
+		{0, 0, 0, 0},
+		{0, 0, 1, 0},
+		{0, 1, 0, 0},
+		{1, 0, 0, 0},
+	}
+
+	for _, input := range tcs {
+		t.Run(input.String(), func(t *testing.T) {
+			_, err := Increment(input, &args.Args{Command: Alpha})
+			if err == nil {
+				t.Fatalf("act, unexpected success")
+			}
+		})
+	}
+}
+
+func TestIncrement_initalizeAlphaTrack(t *testing.T) {
+	type input struct {
+		Current     Labels
+		AlphaTarget string
+	}
+	type tc struct {
+		input
+		expected Labels
+	}
+	tcs := []tc{
+		{input: input{Current: Labels{0, 0, 0, 0}, AlphaTarget: Major}, expected: Labels{1, 0, 0, 1}},
+		{input: input{Current: Labels{0, 0, 0, 0}, AlphaTarget: Minor}, expected: Labels{0, 1, 0, 1}},
+		{input: input{Current: Labels{0, 0, 0, 0}, AlphaTarget: Patch}, expected: Labels{0, 0, 1, 1}},
+		{input: input{Current: Labels{1, 2, 3, 0}, AlphaTarget: Major}, expected: Labels{2, 0, 0, 1}},
+		{input: input{Current: Labels{1, 2, 3, 0}, AlphaTarget: Minor}, expected: Labels{1, 3, 0, 1}},
+		{input: input{Current: Labels{1, 2, 3, 0}, AlphaTarget: Patch}, expected: Labels{1, 2, 4, 1}},
+	}
+
+	for _, tc := range tcs {
+		t.Run(fmt.Sprintf("%s on %s", tc.AlphaTarget, tc.input.Current), func(t *testing.T) {
+			got, err := Increment(tc.input.Current, &args.Args{Command: Alpha, AlphaTrackTarget: tc.AlphaTarget})
+			if err != nil {
+				t.Fatalf("act, unexpected error: %v", err)
+			}
+			if tc.expected != got {
+				t.Errorf("expected %q got %q", tc.expected, got)
+			}
+		})
+	}
+}
+
+func TestIncrement_finalizeAlphaTrack(t *testing.T) {
+	current, expected := Labels{0, 1, 0, 1}, Labels{0, 1, 0, 0}
+	got, err := Increment(current, &args.Args{Command: Finalize})
+	if err != nil {
+		t.Fatalf("act, unexpected error: %v", err)
+	}
+	if expected != got {
+		t.Errorf("expected %q got %q", expected, got)
+	}
+}
+
+func TestIncrement_finalizeWithoutAlphaTrack(t *testing.T) {
+	got, err := Increment(Labels{0, 1, 0, 0}, &args.Args{Command: Finalize})
+	if err == nil {
+		t.Fatalf("act, unexpected success: %q", got)
 	}
 }
