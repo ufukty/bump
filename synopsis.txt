@@ -15,7 +15,7 @@ COMMANDS:
       Issues a semantic version tag by incrementing the patch label of the current version by one (e.g., v1.2.3 to v1.2.4). Initializes at v0.0.1.
 
     alpha [major|minor|patch]
-      Issues a pre-release semantic version tag by incrementing the numeric identifier of the current version by one (e.g., v1.2.0-alpha.3 to v1.2.0-alpha.4). Since alpha releases precede their final version, a label name is needed to calculate the alpha's target (e.g., 'alpha minor' on v1.2.3 creates v1.3.0-alpha.1 and 'alpha major' creates v2.0.0-alpha.1).
+      Issues a pre-release semantic version tag by incrementing the numeric identifier of the current pre-release version by one (e.g., v1.2.0-alpha.3 to v1.2.0-alpha.4). Since alpha releases precede their final version, initiating a new alpha-track requires label name to calculate the target (e.g., 'alpha minor' on v1.2.3 creates v1.3.0-alpha.1 and 'alpha major' creates v2.0.0-alpha.1).
 
     finalize [--force]
       Issues a semantic version tag by finalizing the current alpha-track. No label is needed, as the final version is fixed when the alpha-track is initalized. Landing on v1.0.0 requires --force flag for the same reason as the major command.
