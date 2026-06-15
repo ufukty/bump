@@ -23,7 +23,7 @@ func sort(cases iter.Seq[Labels]) []Labels {
 	})
 }
 
-func TestIncrement_MajorToVersionOnePositive(t *testing.T) {
+func TestIncrement_majorToVersionOnePositive(t *testing.T) {
 	tcs := map[Labels]Labels{
 		{0, 0, 0, 0}: {1, 0, 0, 0},
 		{0, 0, 0, 1}: {1, 0, 0, 0},
@@ -47,7 +47,7 @@ func TestIncrement_MajorToVersionOnePositive(t *testing.T) {
 	}
 }
 
-func TestIncrement_MajorToVersionOneNegative(t *testing.T) {
+func TestIncrement_majorToVersionOneNegative(t *testing.T) {
 	tcs := []Labels{
 		{0, 0, 0, 0},
 		{0, 0, 0, 1},
@@ -69,7 +69,7 @@ func TestIncrement_MajorToVersionOneNegative(t *testing.T) {
 	}
 }
 
-func TestIncrement_Major(t *testing.T) {
+func TestIncrement_major(t *testing.T) {
 	tcs := map[Labels]Labels{
 		{1, 0, 0, 0}: {2, 0, 0, 0},
 		{1, 0, 0, 1}: {2, 0, 0, 0},
@@ -95,7 +95,7 @@ func TestIncrement_Major(t *testing.T) {
 	}
 }
 
-func TestIncrement_Minor(t *testing.T) {
+func TestIncrement_minor(t *testing.T) {
 	tcs := map[Labels]Labels{
 		{0, 0, 0, 0}: {0, 1, 0, 0},
 		{0, 0, 0, 1}: {0, 1, 0, 0},
@@ -121,7 +121,7 @@ func TestIncrement_Minor(t *testing.T) {
 	}
 }
 
-func TestIncrement_Patch(t *testing.T) {
+func TestIncrement_patch(t *testing.T) {
 	tcs := map[Labels]Labels{
 		{0, 0, 0, 0}: {0, 0, 1, 0},
 		{0, 0, 0, 1}: {0, 0, 1, 0},
