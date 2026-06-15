@@ -34,11 +34,15 @@ func Parse(verstr string) (Labels, error) {
 
 func (l Labels) String() string {
 	is := []string{}
-	for i := range 4 {
+	for i := range 3 {
 		if i == 3 && l[3] == 0 { // omit no-alpha
 			continue
 		}
 		is = append(is, strconv.Itoa(l[i]))
 	}
-	return "v" + strings.Join(is, ".")
+	stable := "v" + strings.Join(is, ".")
+	if l[3] > 0 {
+		stable = fmt.Sprintf("%s-alpha.%d", stable, l[3])
+	}
+	return stable
 }
