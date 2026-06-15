@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var extractor = regexp.MustCompile(`v([0-9]+)\.([0-9]+)\.([0-9]+)(?:\.([0-9]+))?.*`)
+var extractor = regexp.MustCompile(`v([0-9]+)\.([0-9]+)\.([0-9]+)(?:-alpha.([0-9]+))?.*`)
 
 type Labels [4]int
 
