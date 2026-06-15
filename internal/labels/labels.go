@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
-	"strings"
 )
 
 var extractor = regexp.MustCompile(`v([0-9]+)\.([0-9]+)\.([0-9]+)(?:-alpha.([0-9]+))?.*`)
 
-type Labels [4]int
+type Labels [4]int // [major, minor, patch, alpha]
 
 func Parse(verstr string) (Labels, error) {
 	ms := extractor.FindStringSubmatch(verstr)
@@ -33,16 +32,9 @@ func Parse(verstr string) (Labels, error) {
 }
 
 func (l Labels) String() string {
-	is := []string{}
-	for i := range 3 {
-		if i == 3 && l[3] == 0 { // omit no-alpha
-			continue
-		}
-		is = append(is, strconv.Itoa(l[i]))
-	}
-	stable := "v" + strings.Join(is, ".")
+	v := fmt.Sprintf("v%d.%d.%d", l[0], l[1], l[2])
 	if l[3] > 0 {
-		stable = fmt.Sprintf("%s-alpha.%d", stable, l[3])
+		v = fmt.Sprintf("%s-alpha.%d", v, l[3])
 	}
-	return stable
+	return v
 }
