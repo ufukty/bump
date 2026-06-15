@@ -2,7 +2,6 @@ package main
 
 import (
 	_ "embed"
-	"errors"
 	"fmt"
 	"os"
 
@@ -49,12 +48,7 @@ func Main() error {
 
 func main() {
 	if err := Main(); err != nil {
-		switch {
-		case errors.Is(err, labels.ErrAccidentalVersionOne):
-			fmt.Println("bump prevents accidentally leaving the zero versions. Run: bump --help")
-		default:
-			fmt.Println(err)
-		}
+		fmt.Println(err)
 		os.Exit(1)
 	}
 }
