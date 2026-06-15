@@ -23,13 +23,6 @@ func increment(version Labels, label int) Labels {
 	return version
 }
 
-func equal(a, b Labels) bool {
-	return a[0] == b[0] &&
-		a[1] == b[1] &&
-		a[2] == b[2] &&
-		a[3] == b[3]
-}
-
 func isStandard(label string) bool { return slices.Contains([]string{Major, Minor, Patch}, label) }
 func index(label string) int       { return slices.Index([]string{Major, Minor, Patch, Alpha}, label) }
 
@@ -112,7 +105,7 @@ func Increment(version Labels, args *args.Args) (Labels, error) {
 	if err != nil {
 		return Labels{}, fmt.Errorf("dispatch: %w", err)
 	}
-	if !args.Force && equal(next, v1) {
+	if !args.Force && next == v1 {
 		return Labels{}, ErrAccidentalVersionOne
 	}
 	return next, nil
