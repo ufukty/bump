@@ -46,7 +46,7 @@ func iterateAlphaTrack(version Labels) (Labels, error) {
 
 func initAlphaTrack(version Labels, args *args.Args) (Labels, error) {
 	if version[3] > 0 {
-		return Labels{}, fmt.Errorf("there is an alpha-track already")
+		return Labels{}, fmt.Errorf("cannot initiate an alpha-track from an alpha version")
 	}
 	next := increment(version, index(args.AlphaTrackTarget))
 	next = increment(next, 3)
