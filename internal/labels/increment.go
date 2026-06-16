@@ -44,8 +44,6 @@ func iterateAlphaTrack(version Labels) (Labels, error) {
 	return increment(version, 3), nil
 }
 
-var ErrInvalidAlphaTarget = fmt.Errorf("invalid alpha target")
-
 func initAlphaTrack(version Labels, args *args.Args) (Labels, error) {
 	if version[3] > 0 {
 		return Labels{}, fmt.Errorf("there is an alpha-track already")
