@@ -18,7 +18,7 @@ func parse(osArgs []string) (*Args, error) {
 		return nil, fmt.Errorf("not enough args. run: bump help")
 	}
 	command, remaining := osArgs[0], osArgs[1:]
-	if !slices.Contains([]string{"major", "minor", "patch", "alpha", "help"}, command) {
+	if !slices.Contains([]string{"major", "minor", "patch", "alpha", "finalize", "help"}, command) {
 		return nil, fmt.Errorf("unknown command %q. run: bump help", command)
 	}
 
