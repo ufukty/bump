@@ -10,40 +10,76 @@ Bump starts with `git describe` in background to learn the latest version, incre
 
 ## Install
 
+Use Go compiler ([go.dev/dl](https://go.dev/dl)) to download and install Bump:
+
 ```sh
 go install github.com/ufukty/bump@latest
 ```
 
-If you don't have the go compiler, installing it is too easy to skip [go.dev/dl](https://go.dev/dl)
+Check if everything works:
 
-## Usage
+```sh
+bump help
+```
+
+## Issuing version tags
 
 ```sh
 $ cd my-beautiful-git-project
-# either of
-$ bump major
-$ bump minor
-$ bump patch
-$ bump alpha
 ```
 
-### Commands
+### Release versions
 
-Bump follows `MAJOR`.`MINOR`.`PATCH` label rules and issues `v1.0.0`-like tags. Also, Bump uses a 4th label called `ALPHA`. This is for distinctively tagging sequent [alpha](https://github.com/ufukty/bump/issues/1) releases. 4th label is omitted for non-alpha versions for complience with [Semantic Versioning 2.0.0](https://semver.org). Bump reads and writes `v` prefixed version tags.
+Bump issues release versions tags in the form of $v\text{MAJOR}.\text{MINOR}.\text{PATCH}$. Issuing the next version is easy once the label of increment is decided. Landing on $v1.0.0$ requires the `--force` flag. See [Accidental Backwards-Compatibility Promise Prevention](#accidental-backwards-compatibility-promise-prevention).
 
-| $v_i$    | command      | $v_{i+1}$  | command desc.   |
-| -------- | ------------ | ---------- | --------------- |
-| `v1.2.3` | `bump major` | `v2.0.0`   | breaking change |
-| `v1.2.3` | `bump minor` | `v1.3.0`   | new features    |
-| `v1.2.3` | `bump patch` | `v1.2.4`   | bug fixes       |
-| `v1.2.3` | `bump alpha` | `v1.2.3.1` | not for use     |
+| Command      | $V_i$    | $V_{i+1}$ | When to use?    |
+| ------------ | -------- | --------- | --------------- |
+| `bump major` | $v1.2.3$ | $v2.0.0$  | Breaking change |
+| `bump minor` | $v1.2.3$ | $v1.3.0$  | New feature     |
+| `bump patch` | $v1.2.3$ | $v1.2.4$  | Bug fixe        |
 
-### Bumping to v1
+### Pre-release versions
 
-Bump rejects the `major` command and fails when the next version is `v1.0.0`. This measure is taken to protect Bump users to accidentally issue and push this very special version number and cause an implicit stability promise for their projects. Thus, in order to bump from a zero version to land on the `v1.0.0` Bump users need to provide this `--force` flag:
+Issuing pre-release tags is done using alpha-tracks. An alpha-track is a series of $v\text{TARGET-alpha}.N$ style tags. The track target is set at initialization and follows the same guidelines as the release version tags. The numeric identifier starts at 1 and incremented at each track iteration. Finalizing an alpha-track issues the $v{TARGET}$. Landing on and targeting $v1.0.0$ requires the `--force` flag. See [Accidental Backwards-Compatibility Promise Prevention](#accidental-backwards-compatibility-promise-prevention).
+
+#### Initiating a new alpha-track
+
+Provingi the alpha command a label name (eg. `major`, `minor`, `patch`) Bump calculates the target version and issues a tag for the first alpha version. You must be on a release version to initiate a new alpha-track.
+
+| Command            | $V_i$    | $V_{i+1}$               |
+| ------------------ | -------- | ----------------------- |
+| `bump alpha major` | $v1.2.3$ | $v2.0.0\text{-alpha.}1$ |
+| `bump alpha minor` | $v1.2.3$ | $v1.3.0\text{-alpha.}1$ |
+| `bump alpha patch` | $v1.2.3$ | $v1.2.4\text{-alpha.}1$ |
+
+#### Iterating the current alpha-track
+
+Without additional argument alpha command iterates the track and assigns a tag for the next pre-release version.
+
+| Command      | $V_i$                   | $V_{i+1}$               |
+| ------------ | ----------------------- | ----------------------- |
+| `bump alpha` | $v2.0.0\text{-alpha.}5$ | $v2.0.0\text{-alpha.}6$ |
+| `bump alpha` | $v1.3.0\text{-alpha.}5$ | $v1.3.0\text{-alpha.}6$ |
+| `bump alpha` | $v1.2.4\text{-alpha.}5$ | $v1.2.4\text{-alpha.}6$ |
+
+#### Finalizing the current alpha-track
+
+Finalizing issues a version tag with the alpha-track's target, this time without the alpha suffix.
+
+| Command               | $V_i$                   | $V_{i+1}$ |
+| --------------------- | ----------------------- | --------- |
+| `bump alpha finalize` | $v2.0.0\text{-alpha.}6$ | $v2.0.0$  |
+| `bump alpha finalize` | $v1.3.0\text{-alpha.}6$ | $v1.3.0$  |
+| `bump alpha finalize` | $v1.2.4\text{-alpha.}6$ | $v1.2.4$  |
+
+## Accidental backwards-compatibility promise prevention
+
+Among many communities the v1 is expected to mark the beginning of backwards-compatibility promise in a software project. [SemVer2.0.0](https://semver.org) is a specification that explicitly states similar expectation. [0ver](https://0ver.org) is another one that suggests against ever reaching to v1. To protect developers from using commands mistakenly and suggesting such promises to their communities unconsciously Bump rejects issuing (or even targeting) the $v1.0.0$ version tag. Developers need to use the `--force` flag to proceed. Such as:
 
 ```sh
 bump major --force
+bump alpha major --force
+bump alpha finalize --force
 ```
 
 ### Publishing tags
