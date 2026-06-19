@@ -43,7 +43,7 @@ Bump follows `MAJOR`.`MINOR`.`PATCH` label rules and issues `v1.0.0`-like tags. 
 Bump rejects the `major` command and fails when the next version is `v1.0.0`. This measure is taken to protect Bump users to accidentally issue and push this very special version number and cause an implicit stability promise for their projects. Thus, in order to bump from a zero version to land on the `v1.0.0` Bump users need to provide this `--force` flag:
 
 ```sh
-bump --force major
+bump major --force
 ```
 
 ### Publishing tags
