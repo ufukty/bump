@@ -21,12 +21,15 @@ func increment(version Labels, label int) Labels {
 	return version
 }
 
-var ErrBackwardsCompatibilityPromise = fmt.Errorf("landing on v1.0.0 requires --force flag")
+var (
+	ErrLandingOnV1WithoutForce = fmt.Errorf("landing on v1.0.0 requires --force flag")
+	ErrTargetingV1WithoutForce = fmt.Errorf("targeting v1.0.0 requires --force flag")
+)
 
 func NextMajor(version Labels, forced bool) (Labels, error) {
 	next := increment(version, index(Major))
 	if next == V1 && !forced {
-		return Labels{}, ErrBackwardsCompatibilityPromise
+		return Labels{}, ErrLandingOnV1WithoutForce
 	}
 	return next, nil
 }
@@ -62,10 +65,10 @@ func InitAlphaTrack(version Labels, target Label, forced bool) (Labels, error) {
 		return Labels{}, fmt.Errorf("cannot initiate an alpha-track from an alpha version")
 	}
 	next := increment(version, index(target))
-	next = increment(next, index(Alpha))
 	if next == V1 && !forced {
-		return Labels{}, ErrBackwardsCompatibilityPromise
+		return Labels{}, ErrTargetingV1WithoutForce
 	}
+	next = increment(next, index(Alpha))
 	return next, nil
 }
 
@@ -76,7 +79,7 @@ func FinalizeAlphaTrack(version Labels, forced bool) (Labels, error) {
 	next := version
 	next[3] = 0
 	if next == V1 && !forced {
-		return Labels{}, ErrBackwardsCompatibilityPromise
+		return Labels{}, ErrLandingOnV1WithoutForce
 	}
 	return next, nil
 }
