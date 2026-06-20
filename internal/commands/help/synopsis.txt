@@ -1,0 +1,26 @@
+NAME:
+    bump - version safely.
+
+SYNOPSIS:
+    bump <command> [--args]
+
+COMMANDS:
+    major [--force]
+      Issues a semantic version tag by incrementing the major label of the current version by one (e.g., v1.2.3 to v2.0.0). Initializes at v1.0.0. Landing on v1.0.0 requires the --force flag and otherwise fails in order to prevent accidentally committing to backwards-compatibility guarantees (see also: 0ver).
+
+    minor
+      Issues a semantic version tag by incrementing the minor label of the current version by one (e.g., v1.2.3 to v1.3.0). Initializes at v0.1.0.
+
+    patch
+      Issues a semantic version tag by incrementing the patch label of the current version by one (e.g., v1.2.3 to v1.2.4). Initializes at v0.0.1.
+
+    alpha major [--force]
+    alpha minor
+    alpha patch
+      Initiates a new alpha-track by issuing the target's first alpha (e.g., on v1.2.3 'alpha minor' creates v1.3.0-alpha.1 and 'alpha major' creates v2.0.0-alpha.1). Targeting v1.0.0 requires the --force flag for the same reason as the major command. Initializes at v1.0.0, v0.1.0 or v0.0.1 respectively for major, minor and patch commands.
+
+    alpha
+      Issues the next alpha tag of the existing alpha-track.
+
+    alpha finalize [--force]
+      Finalizes the alpha-track with issuing the target without the alpha-suffix. Landing on v1.0.0 requires --force for the same reason as the major command.

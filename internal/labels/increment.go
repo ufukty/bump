@@ -2,50 +2,94 @@ package labels
 
 import (
 	"fmt"
-	"slices"
 )
+
+type Label string
 
 const (
-	Major = "major"
-	Minor = "minor"
-	Patch = "patch"
-	Alpha = "alpha"
+	Major = Label("major")
+	Minor = Label("minor")
+	Patch = Label("patch")
+	Alpha = Label("alpha")
 )
-
-var Mods = []string{Major, Minor, Patch, Alpha}
-
-type Args struct {
-	Label string
-	Force bool
-}
 
 func increment(version Labels, label int) Labels {
 	version[label] += 1
-	for j := label + 1; j < 4; j++ { // reseting digits carried over
+	for j := label + 1; j < 4; j++ { // resetting digits carried over
 		version[j] = 0
 	}
 	return version
 }
 
-func equal(a, b Labels) bool {
-	return a[0] == b[0] &&
-		a[1] == b[1] &&
-		a[2] == b[2] &&
-		a[3] == b[3]
+var (
+	ErrLandingOnV1WithoutForce = fmt.Errorf("landing on v1.0.0 requires --force flag")
+	ErrTargetingV1WithoutForce = fmt.Errorf("targeting v1.0.0 requires --force flag")
+	ErrReleaseFromAlphaTrack   = fmt.Errorf("cannot increment from an alpha version")
+)
+
+func NextMajor(version Labels, forced bool) (Labels, error) {
+	if version[3] > 0 {
+		return Labels{}, ErrReleaseFromAlphaTrack
+	}
+	next := increment(version, index(Major))
+	if next == V1 && !forced {
+		return Labels{}, ErrLandingOnV1WithoutForce
+	}
+	return next, nil
 }
 
-var v1 = Labels{1, 0, 0, 0}
-
-var ErrAccidentalVersionOne = fmt.Errorf("unforced leaving of zero versions")
-
-func Increment(version Labels, args Args) (Labels, error) {
-	l := slices.Index(Mods, args.Label)
-	if l == -1 {
-		return Labels{}, fmt.Errorf("unknown label: %s", args.Label)
+func NextMinor(version Labels) (Labels, error) {
+	if version[3] > 0 {
+		return Labels{}, ErrReleaseFromAlphaTrack
 	}
-	next := increment(version, l)
-	if !args.Force && equal(next, v1) {
-		return Labels{}, ErrAccidentalVersionOne
+	return increment(version, index(Minor)), nil
+}
+
+func NextPatch(version Labels) (Labels, error) {
+	if version[3] > 0 {
+		return Labels{}, ErrReleaseFromAlphaTrack
+	}
+	return increment(version, index(Patch)), nil
+}
+
+var ErrCommandRequiresAlphaTrack = fmt.Errorf("command requires an active alpha-track")
+
+func IterateAlphaTrack(version Labels) (Labels, error) {
+	if version[3] == 0 {
+		return Labels{}, ErrCommandRequiresAlphaTrack
+	}
+	return increment(version, index(Alpha)), nil
+}
+
+func index(label Label) int {
+	return map[Label]int{
+		Major: 0,
+		Minor: 1,
+		Patch: 2,
+		Alpha: 3,
+	}[label]
+}
+
+func InitAlphaTrack(version Labels, target Label, forced bool) (Labels, error) {
+	if version[3] > 0 {
+		return Labels{}, fmt.Errorf("cannot initiate an alpha-track from an alpha version")
+	}
+	next := increment(version, index(target))
+	if next == V1 && !forced {
+		return Labels{}, ErrTargetingV1WithoutForce
+	}
+	next = increment(next, index(Alpha))
+	return next, nil
+}
+
+func FinalizeAlphaTrack(version Labels, forced bool) (Labels, error) {
+	if version[3] == 0 {
+		return Labels{}, ErrCommandRequiresAlphaTrack
+	}
+	next := version
+	next[3] = 0
+	if next == V1 && !forced {
+		return Labels{}, ErrLandingOnV1WithoutForce
 	}
 	return next, nil
 }
