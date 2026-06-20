@@ -11,11 +11,13 @@ import (
 )
 
 func Dispatch(args []string) error {
-	switch subcommand, rest := args[0], args[1:]; subcommand {
-	case "":
+	if len(args) == 0 {
 		if err := iterate.Run(); err != nil {
 			return fmt.Errorf("iterate: %w", err)
 		}
+		return nil
+	}
+	switch subcommand, rest := args[0], args[1:]; subcommand {
 	case "major":
 		if err := major.Run(rest); err != nil {
 			return fmt.Errorf("major: %w", err)
