@@ -1,6 +1,10 @@
 package args
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/ufukty/bump/internal/commands/help"
+)
 
 func Dispatch(osArgs []string) error {
 	if len(osArgs) < 1 {
