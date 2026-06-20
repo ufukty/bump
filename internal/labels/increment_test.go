@@ -108,7 +108,10 @@ func TestIncrement_minor(t *testing.T) {
 	for _, input := range sort(maps.Keys(tcs)) {
 		t.Run(input.String(), func(t *testing.T) {
 			expected := tcs[input]
-			got := NextMinor(input)
+			got, err := NextMinor(input)
+			if err != nil {
+				t.Fatalf("act, unexpected error: %v", err)
+			}
 			if expected != got {
 				t.Errorf("expected %q got %q", expected, got)
 			}
@@ -131,7 +134,10 @@ func TestIncrement_patch(t *testing.T) {
 	for _, input := range sort(maps.Keys(tcs)) {
 		t.Run(input.String(), func(t *testing.T) {
 			expected := tcs[input]
-			got := NextPatch(input)
+			got, err := NextPatch(input)
+			if err != nil {
+				t.Fatalf("act, unexpected error: %v", err)
+			}
 			if expected != got {
 				t.Errorf("expected %q got %q", expected, got)
 			}

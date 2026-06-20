@@ -16,7 +16,10 @@ func issue() error {
 	if err != nil {
 		return fmt.Errorf("parsing current version: %w", err)
 	}
-	next := labels.NextPatch(l1)
+	next, err := labels.NextPatch(l1)
+	if err != nil {
+		return fmt.Errorf("determining the next vesion tag: %w", err)
+	}
 	if err := git.Tag(next.String()); err != nil {
 		return fmt.Errorf("git tag: %w", err)
 	}

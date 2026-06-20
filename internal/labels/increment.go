@@ -27,6 +27,9 @@ var (
 )
 
 func NextMajor(version Labels, forced bool) (Labels, error) {
+	if version[3] > 0 {
+		return Labels{}, fmt.Errorf("cannot increment from an alpha version")
+	}
 	next := increment(version, index(Major))
 	if next == V1 && !forced {
 		return Labels{}, ErrLandingOnV1WithoutForce
@@ -34,12 +37,18 @@ func NextMajor(version Labels, forced bool) (Labels, error) {
 	return next, nil
 }
 
-func NextMinor(version Labels) Labels {
-	return increment(version, index(Minor))
+func NextMinor(version Labels) (Labels, error) {
+	if version[3] > 0 {
+		return Labels{}, fmt.Errorf("cannot increment from an alpha version")
+	}
+	return increment(version, index(Minor)), nil
 }
 
-func NextPatch(version Labels) Labels {
-	return increment(version, index(Patch))
+func NextPatch(version Labels) (Labels, error) {
+	if version[3] > 0 {
+		return Labels{}, fmt.Errorf("cannot increment from an alpha version")
+	}
+	return increment(version, index(Patch)), nil
 }
 
 var ErrCommandRequiresAlphaTrack = fmt.Errorf("command requires an active alpha-track")
