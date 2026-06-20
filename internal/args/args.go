@@ -3,16 +3,20 @@ package args
 import (
 	"fmt"
 
+	"github.com/ufukty/bump/internal/commands/alpha"
 	"github.com/ufukty/bump/internal/commands/help"
+	"github.com/ufukty/bump/internal/commands/major"
+	"github.com/ufukty/bump/internal/commands/minor"
+	"github.com/ufukty/bump/internal/commands/patch"
 )
 
-func Dispatch(osArgs []string) error {
-	if len(osArgs) < 1 {
-		return fmt.Errorf("not enough args. run: bump help")
+func Dispatch(args []string) error {
+	if len(args) < 1 {
+		return fmt.Errorf("not enough args")
 	}
-	switch command, remaining := osArgs[0], osArgs[1:]; command {
+	switch command, rest := args[0], args[1:]; command {
 	case "major":
-		if err := major.Run(remaining); err != nil {
+		if err := major.Run(rest); err != nil {
 			return fmt.Errorf("major: %w", err)
 		}
 	case "minor":
@@ -24,7 +28,7 @@ func Dispatch(osArgs []string) error {
 			return fmt.Errorf("patch: %w", err)
 		}
 	case "alpha":
-		if err := alpha.Run(remaining); err != nil {
+		if err := alpha.Dispatch(rest); err != nil {
 			return fmt.Errorf("alpha: %w", err)
 		}
 	case "help":
@@ -32,7 +36,7 @@ func Dispatch(osArgs []string) error {
 			return fmt.Errorf("help: %w", err)
 		}
 	default:
-		return fmt.Errorf("unknown command %q. run: bump help", command)
+		return fmt.Errorf("unknown command: %q", command)
 	}
 	return nil
 }

@@ -10,6 +10,8 @@ var extractor = regexp.MustCompile(`v([0-9]+)\.([0-9]+)\.([0-9]+)(?:-alpha.([0-9
 
 type Labels [4]int // [major, minor, patch, alpha]
 
+var V1 = Labels{1, 0, 0, 0}
+
 func Parse(verstr string) (Labels, error) {
 	ms := extractor.FindStringSubmatch(verstr)
 	if len(ms) != 5 {
