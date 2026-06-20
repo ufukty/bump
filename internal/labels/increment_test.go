@@ -24,11 +24,8 @@ func sort(cases iter.Seq[Labels]) []Labels {
 func TestIncrement_majorToVersionOnePositive(t *testing.T) {
 	tcs := map[Labels]Labels{
 		{0, 0, 0, 0}: {1, 0, 0, 0},
-		{0, 0, 0, 1}: {1, 0, 0, 0},
 		{0, 0, 1, 0}: {1, 0, 0, 0},
-		{0, 0, 1, 1}: {1, 0, 0, 0},
 		{0, 1, 0, 0}: {1, 0, 0, 0},
-		{0, 1, 0, 1}: {1, 0, 0, 0},
 	}
 
 	for _, input := range sort(maps.Keys(tcs)) {
@@ -48,11 +45,8 @@ func TestIncrement_majorToVersionOnePositive(t *testing.T) {
 func TestIncrement_majorToVersionOneNegative(t *testing.T) {
 	tcs := []Labels{
 		{0, 0, 0, 0},
-		{0, 0, 0, 1},
 		{0, 0, 1, 0},
-		{0, 0, 1, 1},
 		{0, 1, 0, 0},
-		{0, 1, 0, 1},
 	}
 
 	for _, input := range tcs {
@@ -70,13 +64,9 @@ func TestIncrement_majorToVersionOneNegative(t *testing.T) {
 func TestIncrement_major(t *testing.T) {
 	tcs := map[Labels]Labels{
 		{1, 0, 0, 0}: {2, 0, 0, 0},
-		{1, 0, 0, 1}: {2, 0, 0, 0},
 		{1, 0, 1, 0}: {2, 0, 0, 0},
-		{1, 0, 1, 1}: {2, 0, 0, 0},
 		{1, 1, 0, 0}: {2, 0, 0, 0},
-		{1, 1, 0, 1}: {2, 0, 0, 0},
 		{2, 0, 0, 0}: {3, 0, 0, 0},
-		{2, 0, 0, 1}: {3, 0, 0, 0},
 	}
 
 	for _, input := range sort(maps.Keys(tcs)) {
@@ -96,13 +86,9 @@ func TestIncrement_major(t *testing.T) {
 func TestIncrement_minor(t *testing.T) {
 	tcs := map[Labels]Labels{
 		{0, 0, 0, 0}: {0, 1, 0, 0},
-		{0, 0, 0, 1}: {0, 1, 0, 0},
 		{0, 0, 1, 0}: {0, 1, 0, 0},
-		{0, 0, 1, 1}: {0, 1, 0, 0},
 		{0, 1, 0, 0}: {0, 2, 0, 0},
-		{0, 1, 0, 1}: {0, 2, 0, 0},
 		{1, 0, 0, 0}: {1, 1, 0, 0},
-		{1, 0, 0, 1}: {1, 1, 0, 0},
 	}
 
 	for _, input := range sort(maps.Keys(tcs)) {
@@ -122,13 +108,9 @@ func TestIncrement_minor(t *testing.T) {
 func TestIncrement_patch(t *testing.T) {
 	tcs := map[Labels]Labels{
 		{0, 0, 0, 0}: {0, 0, 1, 0},
-		{0, 0, 0, 1}: {0, 0, 1, 0},
 		{0, 0, 1, 0}: {0, 0, 2, 0},
-		{0, 0, 1, 1}: {0, 0, 2, 0},
 		{0, 1, 0, 0}: {0, 1, 1, 0},
-		{0, 1, 0, 1}: {0, 1, 1, 0},
 		{1, 0, 0, 0}: {1, 0, 1, 0},
-		{1, 0, 0, 1}: {1, 0, 1, 0},
 	}
 
 	for _, input := range sort(maps.Keys(tcs)) {
@@ -140,6 +122,25 @@ func TestIncrement_patch(t *testing.T) {
 			}
 			if expected != got {
 				t.Errorf("expected %q got %q", expected, got)
+			}
+		})
+	}
+}
+
+func TestIncrement_releaseFromAlphaTrack(t *testing.T) {
+	tcs := []Labels{
+		{0, 0, 0, 1},
+		{0, 0, 1, 1},
+		{0, 1, 0, 1},
+	}
+
+	for _, input := range tcs {
+		t.Run(input.String(), func(t *testing.T) {
+			_, err := NextMajor(input, false)
+			if err == nil {
+				t.Fatalf("act, unexpected success. Increment should reject issuing v1.0.0 without the arg")
+			} else if err != ErrReleaseFromAlphaTrack {
+				t.Fatalf("act, expected %v got %v", ErrReleaseFromAlphaTrack, err)
 			}
 		})
 	}

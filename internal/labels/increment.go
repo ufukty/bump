@@ -24,11 +24,12 @@ func increment(version Labels, label int) Labels {
 var (
 	ErrLandingOnV1WithoutForce = fmt.Errorf("landing on v1.0.0 requires --force flag")
 	ErrTargetingV1WithoutForce = fmt.Errorf("targeting v1.0.0 requires --force flag")
+	ErrReleaseFromAlphaTrack   = fmt.Errorf("cannot increment from an alpha version")
 )
 
 func NextMajor(version Labels, forced bool) (Labels, error) {
 	if version[3] > 0 {
-		return Labels{}, fmt.Errorf("cannot increment from an alpha version")
+		return Labels{}, ErrReleaseFromAlphaTrack
 	}
 	next := increment(version, index(Major))
 	if next == V1 && !forced {
@@ -39,14 +40,14 @@ func NextMajor(version Labels, forced bool) (Labels, error) {
 
 func NextMinor(version Labels) (Labels, error) {
 	if version[3] > 0 {
-		return Labels{}, fmt.Errorf("cannot increment from an alpha version")
+		return Labels{}, ErrReleaseFromAlphaTrack
 	}
 	return increment(version, index(Minor)), nil
 }
 
 func NextPatch(version Labels) (Labels, error) {
 	if version[3] > 0 {
-		return Labels{}, fmt.Errorf("cannot increment from an alpha version")
+		return Labels{}, ErrReleaseFromAlphaTrack
 	}
 	return increment(version, index(Patch)), nil
 }
