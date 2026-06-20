@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	if err := args.Dispatch(os.Args); err != nil {
+	if err := args.Dispatch(os.Args[1:]); err != nil {
 		fmt.Println(err)
 		fmt.Println("try: bump help")
 		os.Exit(1)
