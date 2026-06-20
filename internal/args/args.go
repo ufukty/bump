@@ -1,47 +1,35 @@
 package args
 
-import (
-	"fmt"
-	"os"
-	"slices"
-	"strings"
-)
+import "fmt"
 
-type Args struct {
-	Command          string
-	Force            bool   // valid when command is major or finalize
-	AlphaTrackTarget string // valid when command is alpha
-}
-
-func parse(osArgs []string) (*Args, error) {
+func Dispatch(osArgs []string) error {
 	if len(osArgs) < 1 {
-		return nil, fmt.Errorf("not enough args. run: bump help")
+		return fmt.Errorf("not enough args. run: bump help")
 	}
 	command, remaining := osArgs[0], osArgs[1:]
-	if !slices.Contains([]string{"major", "minor", "patch", "alpha", "help"}, command) {
-		return nil, fmt.Errorf("unknown command %q. run: bump help", command)
-	}
-
-	args := &Args{Command: command}
 	switch command {
-	case "major", "finalize":
-		if len(remaining) > 0 && strings.TrimSpace(remaining[0]) == "--force" {
-			args.Force = true
+	case "major":
+		if err := major.Run(remaining); err != nil {
+			return fmt.Errorf("major: %w", err)
 		}
-
+	case "minor":
+		if err := minor.Run(); err != nil {
+			return fmt.Errorf("minor: %w", err)
+		}
+	case "patch":
+		if err := patch.Run(); err != nil {
+			return fmt.Errorf("patch: %w", err)
+		}
 	case "alpha":
-		if len(remaining) > 0 {
-			track := remaining[0]
-			if !slices.Contains([]string{"major", "minor", "patch"}, strings.TrimSpace(track)) {
-				return nil, fmt.Errorf("unknown ")
-			}
-			args.AlphaTrackTarget = track
+		if err := alpha.Run(remaining); err != nil {
+			return fmt.Errorf("alpha: %w", err)
 		}
+	case "help":
+		if err := help.Run(); err != nil {
+			return fmt.Errorf("help: %w", err)
+		}
+	default:
+		return fmt.Errorf("unknown command %q. run: bump help", command)
 	}
-
-	return args, nil
-}
-
-func Command() (*Args, error) {
-	return parse(os.Args[1:])
+	return nil
 }
