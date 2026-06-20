@@ -6,8 +6,7 @@ func Dispatch(osArgs []string) error {
 	if len(osArgs) < 1 {
 		return fmt.Errorf("not enough args. run: bump help")
 	}
-	command, remaining := osArgs[0], osArgs[1:]
-	switch command {
+	switch command, remaining := osArgs[0], osArgs[1:]; command {
 	case "major":
 		if err := major.Run(remaining); err != nil {
 			return fmt.Errorf("major: %w", err)
